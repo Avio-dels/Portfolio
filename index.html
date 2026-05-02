@@ -19,16 +19,7 @@
   --card-bg: rgba(255,255,255,0.035);
   --modal-bg: #0d1117;
 }
-[data-theme="light"] {
-  --bg: #f4f6fb;
-  --surface: #ffffff;
-  --surface2: #eef1f7;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: rgba(0,0,0,0.08);
-  --card-bg: rgba(0,0,0,0.025);
-  --modal-bg: #ffffff;
-}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -37,13 +28,30 @@ body {
   color: var(--text);
   overflow-x: hidden;
   cursor: none;
-  transition: background 0.3s, color 0.3s;
+  transition: none;
 }
 
 /* ── Cursor ── */
-#cursor { width:12px; height:12px; background:var(--accent); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; transition:transform 0.12s ease; }
-#cursor-ring { width:40px; height:40px; border:1.5px solid rgba(0,229,195,0.4); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9998; transition:width 0.2s,height 0.2s,border-color 0.2s; }
-body.hovering #cursor-ring { width:60px; height:60px; border-color:rgba(0,229,195,0.7); }
+#cursor-dot {
+  width:6px; height:6px; background:var(--accent); border-radius:50%;
+  position:fixed; top:0; left:0; pointer-events:none; z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.08s ease, opacity 0.2s;
+}
+#cursor-outline {
+  width:32px; height:32px;
+  border:1px solid rgba(0,229,195,0.5); border-radius:50%;
+  position:fixed; top:0; left:0; pointer-events:none; z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width 0.25s ease, height 0.25s ease, border-color 0.25s ease, transform 0.08s linear;
+}
+body.hovering #cursor-outline {
+  width:48px; height:48px;
+  border-color:rgba(0,229,195,0.8);
+}
+body.hovering #cursor-dot {
+  transform:translate(-50%,-50%) scale(1.5);
+}
 
 /* ── Scroll progress ── */
 #scroll-bar { position:fixed; top:0; left:0; height:2px; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:200; transition:width 0.1s; }
@@ -55,14 +63,14 @@ body::before {
   background-size:60px 60px; pointer-events:none;
   opacity:1; transition:opacity 0.3s;
 }
-[data-theme="light"] body::before { opacity:0.4; }
+
 
 /* ── Blobs ── */
 .blob { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; opacity:0.15; animation:drift 18s ease-in-out infinite alternate; }
 .blob1 { width:600px; height:600px; background:#00e5c3; top:-200px; left:-150px; }
 .blob2 { width:500px; height:500px; background:#6c63ff; bottom:-150px; right:-100px; animation-delay:-6s; }
 .blob3 { width:350px; height:350px; background:#00e5c3; top:50%; left:50%; animation-delay:-12s; }
-[data-theme="light"] .blob { opacity:0.07; }
+
 @keyframes drift { from{transform:translate(0,0) scale(1);} to{transform:translate(40px,30px) scale(1.08);} }
 
 /* ── Layout ── */
@@ -78,7 +86,7 @@ nav {
   border-bottom:1px solid var(--border);
   transition:padding 0.3s, background 0.3s;
 }
-[data-theme="light"] nav { background:rgba(244,246,251,0.85); }
+
 nav .inner { display:flex; justify-content:space-between; align-items:center; width:min(90%,1100px); margin:0 auto; }
 .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--accent); text-decoration:none; }
 .nav-links { display:flex; gap:2.5rem; list-style:none; }
@@ -100,14 +108,7 @@ nav .inner { display:flex; justify-content:space-between; align-items:center; wi
 .btn-resume:hover { background:rgba(0,229,195,0.08); box-shadow:0 0 18px rgba(0,229,195,0.15); }
 .btn-resume svg { width:13px; height:13px; }
 
-/* Theme toggle */
-.theme-toggle {
-  width:36px; height:36px; border-radius:50%;
-  background:var(--card-bg); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  cursor:none; font-size:0.9rem; transition:background 0.2s; color:var(--text);
-}
-.theme-toggle:hover { background:rgba(0,229,195,0.1); }
+
 
 /* Hamburger */
 .hamburger { display:none; flex-direction:column; gap:5px; cursor:none; padding:4px; background:none; border:none; }
@@ -122,7 +123,7 @@ nav .inner { display:flex; justify-content:space-between; align-items:center; wi
   background:rgba(6,8,15,0.97); backdrop-filter:blur(20px);
   z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:2.5rem;
 }
-[data-theme="light"] .mobile-nav { background:rgba(244,246,251,0.97); }
+
 .mobile-nav.open { display:flex; }
 .mobile-nav a { font-family:'Syne',sans-serif; font-size:2rem; font-weight:700; color:var(--text); text-decoration:none; transition:color 0.2s; }
 .mobile-nav a:hover { color:var(--accent); }
@@ -146,15 +147,7 @@ h1 .accent-word { color:var(--accent); }
 
 .hero-desc { font-size:1.05rem; line-height:1.75; color:var(--muted); max-width:480px; margin-bottom:2rem; animation:fadeIn 1s 0.6s both; }
 
-/* Currently building ticker */
-.building-ticker {
-  display:inline-flex; align-items:center; gap:0.6rem;
-  padding:0.5rem 1rem; margin-bottom:1.75rem;
-  background:rgba(108,99,255,0.08); border:1px solid rgba(108,99,255,0.2);
-  border-radius:20px; font-size:0.8rem; color:rgba(180,175,255,0.9);
-  animation:fadeIn 1s 0.5s both;
-}
-.building-ticker .ticker-dot { width:6px; height:6px; border-radius:50%; background:#a78bfa; animation:pulse-dot 1.8s ease-in-out infinite; }
+
 
 .hero-cta { display:flex; gap:1rem; flex-wrap:wrap; animation:fadeIn 1s 0.8s both; }
 .btn-primary { display:inline-flex; align-items:center; gap:0.5rem; padding:0.85rem 2rem; background:var(--accent); color:#06080f; font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.9rem; border:none; border-radius:6px; text-decoration:none; transition:transform 0.2s,box-shadow 0.2s; cursor:none; }
@@ -192,7 +185,7 @@ h2 { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:
 .skill-bar-row { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
 .skill-bar-label { font-size:0.72rem; color:var(--muted); white-space:nowrap; min-width:70px; }
 .skill-bar-track { flex:1; height:3px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
-[data-theme="light"] .skill-bar-track { background:rgba(0,0,0,0.08); }
+
 .skill-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:0%; transition:width 1.2s cubic-bezier(0.16,1,0.3,1); }
 .skill-bar-pct { font-size:0.68rem; color:var(--accent); min-width:28px; text-align:right; }
 .tag { font-size:0.7rem; font-weight:500; padding:3px 10px; border-radius:20px; background:rgba(0,229,195,0.08); border:1px solid rgba(0,229,195,0.15); color:rgba(0,229,195,0.8); }
@@ -319,8 +312,8 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
 </head>
 <body data-theme="dark">
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-outline"></div>
 <div id="scroll-bar"></div>
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
@@ -354,7 +347,6 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Resume
       </a>
-      <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -373,9 +365,6 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
           <span class="line"><span class="accent-word">Intelligent</span></span>
           <span class="line"><span>Systems.</span></span>
         </h1>
-        <div class="building-ticker">
-          <span class="ticker-dot"></span>
-        </div>
         <p class="hero-desc">AI/ML Developer &amp; CSE student from Amravati. I turn data into decisions — from computer vision pipelines to predictive ML models.</p>
         <div class="hero-cta">
           <a href="#projects" class="btn-primary">View Projects →</a>
@@ -485,8 +474,8 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
 
       <div class="project-card" onclick="openModal('face')">
         <div class="project-thumb">
-           <img src="screenshots/face-recognition.png" alt="Face Recognition"> 
-          <div class="project-thumb-placeholder">👁️</div>
+          <img src="images/face-recognition.png" alt="Face Recognition Attendance System" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="project-thumb-placeholder" style="display:none;">👁️</div>
         </div>
         <div class="project-body">
           <div class="project-num">01</div>
@@ -503,8 +492,8 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
 
       <div class="project-card" onclick="openModal('loan')">
         <div class="project-thumb">
-          <!-- ── ADD screenshot: <img src="screenshots/loan-prediction.png" alt="Loan Prediction"> ── -->
-          <div class="project-thumb-placeholder">📊</div>
+          <img src="images/loan-prediction.png" alt="Loan Approval Prediction" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="project-thumb-placeholder" style="display:none;">📊</div>
         </div>
         <div class="project-body">
           <div class="project-num">02</div>
@@ -521,8 +510,8 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
 
       <div class="project-card" onclick="openModal('chat')">
         <div class="project-thumb">
-          <!-- ── ADD screenshot: <img src="screenshots/chit-chat.png" alt="Chit Chat App"> ── -->
-          <div class="project-thumb-placeholder">💬</div>
+          <img src="images/chit-chat.png" alt="Chit Chat Real-Time App" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="project-thumb-placeholder" style="display:none;">💬</div>
         </div>
         <div class="project-body">
           <div class="project-num">03</div>
@@ -539,8 +528,8 @@ footer { text-align:center; padding:2rem; border-top:1px solid var(--border); co
 
       <div class="project-card" onclick="openModal('ds')">
         <div class="project-thumb">
-          <!-- ── ADD screenshot: <img src="screenshots/data-science.png" alt="Data Science Portfolio"> ── -->
-          <div class="project-thumb-placeholder">🔬</div>
+          <img src="images/data-science.png" alt="Data Science Portfolio" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="project-thumb-placeholder" style="display:none;">🔬</div>
         </div>
         <div class="project-body">
           <div class="project-num">04</div>
@@ -757,11 +746,21 @@ const projects = {
   }
 };
 
+const projectImgs = {
+  face: 'images/face-recognition.png',
+  loan: 'images/loan-prediction.png',
+  chat: 'images/chit-chat.png',
+  ds:   'images/data-science.png'
+};
+
 function openModal(id) {
   const p = projects[id];
-  document.getElementById('modalImg').textContent = p.emoji;
-  // ── If you add a screenshot image, replace the placeholder with:
-  // document.getElementById('modalImg').innerHTML = `<img src="screenshots/${id}.png" class="modal-img" alt="${p.title}">`;
+  const imgSrc = projectImgs[id];
+  const modalImgEl = document.getElementById('modalImg');
+  modalImgEl.innerHTML = `
+    <img src="${imgSrc}" class="modal-img" alt="${p.title}"
+      onerror="this.outerHTML='<div class=\\'modal-img-placeholder\\'>${p.emoji}</div>'">
+  `;
   document.getElementById('modalTitle').textContent = p.title;
   document.getElementById('modalMeta').innerHTML = p.meta.map(m => `<span>${m}</span>`).join('');
   document.getElementById('modalDesc').textContent = p.desc;
@@ -780,18 +779,21 @@ function closeModalDirect() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
 
-// ── Custom cursor ──
-const cur = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx=0,my=0,rx=0,ry=0;
+// ── Custom cursor (clean, no blend-mode) ──
+const dot = document.getElementById('cursor-dot');
+const outline = document.getElementById('cursor-outline');
+let mouseX = 0, mouseY = 0, outX = 0, outY = 0;
 document.addEventListener('mousemove', e => {
-  mx=e.clientX; my=e.clientY;
-  cur.style.transform = `translate(${mx-6}px,${my-6}px)`;
+  mouseX = e.clientX; mouseY = e.clientY;
+  dot.style.left = mouseX + 'px';
+  dot.style.top = mouseY + 'px';
 });
-(function animRing() {
-  rx += (mx-rx-20)*0.12; ry += (my-ry-20)*0.12;
-  ring.style.transform = `translate(${rx}px,${ry}px)`;
-  requestAnimationFrame(animRing);
+(function animOutline() {
+  outX += (mouseX - outX) * 0.14;
+  outY += (mouseY - outY) * 0.14;
+  outline.style.left = outX + 'px';
+  outline.style.top = outY + 'px';
+  requestAnimationFrame(animOutline);
 })();
 document.querySelectorAll('a,button,.project-card,.skill-card,.cert-card').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
@@ -805,13 +807,7 @@ window.addEventListener('scroll', () => {
   document.getElementById('navbar').style.padding = window.scrollY > 50 ? '12px 0' : '20px 0';
 });
 
-// ── Theme toggle ──
-const toggle = document.getElementById('themeToggle');
-toggle.addEventListener('click', () => {
-  const isDark = document.body.getAttribute('data-theme') === 'dark';
-  document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  toggle.textContent = isDark ? '🌙' : '☀️';
-});
+
 
 // ── Mobile nav ──
 const ham = document.getElementById('hamburger');
